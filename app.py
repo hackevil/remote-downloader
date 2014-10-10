@@ -49,7 +49,6 @@ def task_monitor(taskid):
     task.run(app, request, request.namespace)
 
 
-
 @socketio.on('disconnect', namespace='/task')
 def task_disconnect():
     pass
@@ -62,4 +61,4 @@ def task_connect():
     #emit('my response', {'data': 'Connected', 'count': 0})
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app)
