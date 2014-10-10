@@ -28,8 +28,11 @@ def download_post():
     return render_template('download_progress.html', taskid=task.id)
 
 
-@app.route('/download/<filename>', methods=["GET"])
+@app.route('/downloads/<filename>', methods=["GET"])
 def download_file(filename):
+    """For test only, The upstream web server will provide the same function
+    with position support
+    """
     return send_file(path.join(getcwd(), 'downloads', filename),
                      as_attachment=True)
 
@@ -38,11 +41,10 @@ def download_file(filename):
 def task_monitor(taskid):
     print("SocketIO moinitor: " + taskid)
     task = TaskManager.getInstance().get(taskid)
-    m_emit = emit
     if task:
-        task.on('progress', lambda x: m_emit('progress', x))
-        task.on('complete', lambda x: m_emit('complete', x))
-        task.on('error', lambda x: m_emit('error', x))
+        task.on('progress', lambda x: emit('progress', x))
+        task.on('complete', lambda x: emit('complete', x))
+        task.on('error', lambda x: emit('error', x))
         task.run(app, request, request.namespace)
 
 

@@ -57,7 +57,7 @@
                 .removeClass('active')
                 .removeClass('progress-bar-warning')
                 .addClass('progress-bar-success');
-            var path = "/download/" + name;
+            var path = "/downloads/" + name;
             setMessage('Download Completed. Click <a href="' + path + '">here</a> to download the file.', 'success');
             completed = true;
             socket.disconnect();
