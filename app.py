@@ -53,7 +53,8 @@ def task_disconnect():
 
 @socketio.on('connect', namespace='/task')
 def task_connect():
-    print("SocketIO connected")
+    pass
+    #print("SocketIO connected")
     #emit('my response', {'data': 'Connected', 'count': 0})
 
 if __name__ == '__main__':

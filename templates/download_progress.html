@@ -36,45 +36,51 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
     <script>
-    $(document).ready(function() {
-        var taskid = $("#dl-progress").data('taskid');
-        var namespace = 'task';
-        var url = [window.location.protocol, '', window.location.host, namespace].join('/');
-        var socket = io.connect(url);
-        socket.on('connect', function() {
-            socket.on('progress', function(data) {
-                percentage = (data[0] * 100 / data[1]).toFixed(1)
-                $('#dl-progress > .progress-bar')
-                    .css('width', percentage + '%')
-                    .html(percentage + '%')
-                    .attr('aria-valuenow', percentage);
-            });
-            socket.on('complete', function(name) {
-                $('#dl-progress > .progress-bar')
-                    .css('width', 100 + '%')
-                    .html('Completed')
-                    .attr('aria-valuenow', 100)
-                    .removeClass('active')
-                    .removeClass('progress-bar-warning')
-                    .addClass('progress-bar-success');
-                var path = "/download/" + name;
-                setMessage('Download Completed. Click <a href="' + path + '">here</a> to download the file.', 'success');
-                socket.disconnect();
-            });
-            socket.on('error', function(msg) {
-                $('#dl-progress > .progress-bar')
-                    .css('width', 100 + '%')
-                    .html('Error')
-                    .attr('aria-valuenow', 0)
-                    .removeClass('active')
-                    .removeClass('progress-bar-warning')
-                    .addClass('progress-bar-danger');
-                setMessage(msg, 'danger')
-                socket.disconnect();
-            });
-
-            socket.emit('monitor', taskid);
+    var taskid = $("#dl-progress").data('taskid');
+    var namespace = 'task';
+    var url = [window.location.protocol, '', window.location.host, namespace].join('/');
+    var completed = false;
+    var socket = io.connect(url, {reconnect:false});
+    socket.on('connect', function() {
+        socket.on('progress', function(data) {
+            percentage = (data[0] * 100 / data[1]).toFixed(1)
+            $('#dl-progress > .progress-bar')
+                .css('width', percentage + '%')
+                .html(percentage + '%')
+                .attr('aria-valuenow', percentage);
         });
+        socket.on('complete', function(name) {
+            $('#dl-progress > .progress-bar')
+                .css('width', 100 + '%')
+                .html('Completed')
+                .attr('aria-valuenow', 100)
+                .removeClass('active')
+                .removeClass('progress-bar-warning')
+                .addClass('progress-bar-success');
+            var path = "/download/" + name;
+            setMessage('Download Completed. Click <a href="' + path + '">here</a> to download the file.', 'success');
+            completed = true;
+            socket.disconnect();
+        });
+        socket.on('error', function(msg) {
+            $('#dl-progress > .progress-bar')
+                .css('width', 100 + '%')
+                .html('Error')
+                .attr('aria-valuenow', 0)
+                .removeClass('active')
+                .removeClass('progress-bar-warning')
+                .addClass('progress-bar-danger');
+            setMessage(msg, 'danger');
+            completed = true;
+            socket.disconnect();
+        });
+        socket.on('disconnect', function(){
+          if(!completed){
+             socket.socket.reconnect();
+          }
+        })
+        console.log("before emit monitor")
+        socket.emit('monitor', taskid);
     });
 
     function setMessage(msg, style) {
