@@ -144,5 +144,5 @@ class DownloadTask(Task):
             except Exception as ex:
                 print(ex)
                 traceback.print_stack()
-                self.emit('error', ex)
+                self.emit('error', str(ex))
                 self.status = 99

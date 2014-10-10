@@ -40,11 +40,14 @@ def download_file(filename):
 def task_monitor(taskid):
     print("SocketIO moinitor: " + taskid)
     task = TaskManager.getInstance().get(taskid)
-    if task:
-        task.on('progress', lambda x: emit('progress', x))
-        task.on('complete', lambda x: emit('complete', x))
-        task.on('error', lambda x: emit('error', x))
-        task.run(app, request, request.namespace)
+    if not task:
+        emit('error', 'Download task "{}" do not exists'.format(taskid))
+        return
+    task.on('progress', lambda x: emit('progress', x))
+    task.on('complete', lambda x: emit('complete', x))
+    task.on('error', lambda x: emit('error', x))
+    task.run(app, request, request.namespace)
+
 
 
 @socketio.on('disconnect', namespace='/task')
