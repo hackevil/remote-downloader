@@ -22,8 +22,7 @@ def index():
 
 @app.route('/download', methods=["POST"])
 def download_post():
-    uri = request.form['uri']
-    task = DownloadTask({'uri': uri})
+    task = DownloadTask(request.form)
     TaskManager.getInstance().add(task)
     return render_template('download_progress.html', taskid=task.id)
 

@@ -116,15 +116,21 @@ class DownloadTask(Task):
                 length = int(r.headers[key]) if key in r.headers else 0
                 mime_ext = guess_extension(r.headers['content-type'])
                 mime_ext = mime_ext if mime_ext else ''
-                url = urlparse(r.url)
-                basename = path.basename(url.path)
+                if 'saveas' in self._opt:
+                    basename = self._opt['saveas']
+                else:
+                    basename = path.basename(urlparse(r.url).path)
                 ext = ''
+                name = ''
                 if basename:
                     name, ext = path.splitext(basename)
                 if ext == mime_ext:
                     savename = basename
+                elif name:
+                    savename = name + mime_ext
                 else:
                     savename = self.id + mime_ext
+                print(savename)
                 savepath = path.join(getcwd(), 'downloads', savename)
                 chunk_size = 128 * 1024
                 received = 0
