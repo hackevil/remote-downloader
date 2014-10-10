@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Downloading...</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <!-- <link rel="stylesheet" href="/stylesheets/style.css"> -->
+    <!--[if lt IE 8]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div>
+                    <h1 class="text-center">Remote file downloader
+                        <small>Powered by <a href="http://aulphar.me">Aulphar</a>
+                        </small>
+                    </h1>
+                </div>
+                <div id="dl-message" class="alert alert-warning" role="alert">Downloading file...</div>
+                <div id="dl-progress" data-taskid="{{taskid}}" class="progress">
+                    <div role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="10" style="width: 0%; min-width: 1%;" class="progress-bar progress-bar-warning progress-bar-striped active"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        var taskid = $("#dl-progress").data('taskid');
+        var namespace = 'task';
+        var url = [window.location.protocol, '', window.location.host, namespace].join('/');
+        var socket = io.connect(url);
+        socket.on('connect', function() {
+            socket.on('progress', function(data) {
+                percentage = (data[0] * 100 / data[1]).toFixed(1)
+                $('#dl-progress > .progress-bar')
+                    .css('width', percentage + '%')
+                    .html(percentage + '%')
+                    .attr('aria-valuenow', percentage);
+            });
+            socket.on('complete', function(name) {
+                $('#dl-progress > .progress-bar')
+                    .css('width', 100 + '%')
+                    .html('Completed')
+                    .attr('aria-valuenow', 100)
+                    .removeClass('active')
+                    .removeClass('progress-bar-warning')
+                    .addClass('progress-bar-success');
+                var path = "/download/" + name;
+                setMessage('Download Completed. Click <a href="' + path + '">here</a> to download the file.', 'success');
+                socket.disconnect();
+            });
+            socket.on('error', function(msg) {
+                $('#dl-progress > .progress-bar')
+                    .css('width', 100 + '%')
+                    .html('Error')
+                    .attr('aria-valuenow', 0)
+                    .removeClass('active')
+                    .removeClass('progress-bar-warning')
+                    .addClass('progress-bar-danger');
+                setMessage(msg, 'danger')
+                socket.disconnect();
+            });
+
+            socket.emit('monitor', taskid);
+        });
+    });
+
+    function setMessage(msg, style) {
+        style = style || 'info';
+        var $ele = $('#dl-message');
+        $ele.html(msg);
+        ['success', 'info', 'warning', 'danger'].forEach(function(s) {
+            $ele.removeClass('alert-' + s);
+        });
+        $ele.addClass('alert-' + style);
+    }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "remote-dl-py",
+  "version": "1.0.0",
+  "description": "Remote file download helper in python with Flask and socketio",
+  "main": "app.py",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "Flask-SocketIO": "*",
+    "requests": "*"
+  }
+}
