@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
                 <div>
-                    <h1 class="text-center">Remote file downloader
+                    <h1 class="text-center"><a href="/">Remote file downloader</a>
                         <small>Powered by <a href="http://aulphar.me">Aulphar</a>
                         </small>
                     </h1>
@@ -40,7 +40,9 @@
     var namespace = 'task';
     var url = [window.location.protocol, '', window.location.host, namespace].join('/');
     var completed = false;
-    var socket = io.connect(url, {reconnect:false});
+    var socket = io.connect(url, {
+        reconnect: false
+    });
     socket.on('connect', function() {
         socket.on('progress', function(data) {
             percentage = (data[0] * 100 / data[1]).toFixed(1)
@@ -74,10 +76,10 @@
             completed = true;
             socket.disconnect();
         });
-        socket.on('disconnect', function(){
-          if(!completed){
-             socket.socket.reconnect();
-          }
+        socket.on('disconnect', function() {
+            if (!completed) {
+                socket.socket.reconnect();
+            }
         })
         console.log("before emit monitor")
         socket.emit('monitor', taskid);
