@@ -3,7 +3,7 @@ Remote Download Helper
 
 Intorduction
 -----------------
-A simple web app to help you download files from server, it's like a proxyed downloader, useful when certain sites are blocked.
+A simple web app to help you download files on server, it's like a proxyed downloader, useful when certain sites are blocked.
 
 It's built on [Flask-SocketIO](https://github.com/miguelgrinberg/Flask-SocketIO), [requests](https://github.com/kennethreitz/requests) and [bootstrap](https://github.com/twbs/bootstrap), thanks.
 
@@ -22,6 +22,11 @@ Deploy on ubuntu
 
 1. Setup nginx server, it's strongly recommended to use stable version instead of the outdated one comes with ubuntu. Steps see [here](http://nginx.org/en/linux_packages.html#stable)
 2. clone this repository
+
+    ```
+    git clone https://github.com/aulphar/remote-downloader.git
+    ```
+
 3. change repository owner to nginx(or whatever you use with nginx)
 
     ```bash
