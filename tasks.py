@@ -101,22 +101,15 @@ class DownloadTask(Task):
 
     def run(self, app, req, ns):
         if self.status == 0:
-            #thread = Thread(target=self._download_run)
-            # thread.start()
-            #print(app)
-            self.app = app
-            self.req = req
-            self.ns = ns
-            thread.start_new_thread(self._download_run)
+            thread.start_new_thread(self._download_run, (app, req, ns))
             self.status = 1
 
-    def _download_run(self):
-        app = self.app
+    def _download_run(self, app, req, ns):
         with app.test_request_context():
             from flask import request
             from flask.ext.socketio import emit
-            request = self.req
-            request.namespace = self.ns
+            request = req
+            request.namespace = ns
             try:
                 r = requests.get(self._opt['uri'], stream=True)
                 key = 'content-length'
